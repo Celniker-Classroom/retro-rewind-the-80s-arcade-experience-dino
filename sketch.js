@@ -16,33 +16,33 @@ ground.rotation = 0;
 ground.physics = STATIC;
 createHitbox(ground, 0, 250, 1500, 100);
 
-let platform = new Sprite();
-platform.x = 120;
-platform.y = 80;
-platform.color = 'brown';
-platform.width = 220;
-platform.height = 20;
-platform.rotation = 0;
-platform.physics = STATIC;
-createHitbox(platform, 120, 80, 220, 20);
+const platformTemplate = {
+  img: 'images/Platform.png',
+  width: 548,
+  height: 119,
+  physics: STATIC,
+  rotation: 0
+};
 
-function createPlatform(sprite, x, y){
+function createPlatform(sprite, x, y, scale){
 	let clone = new Sprite()
+	clone.img = sprite.img;
 	clone.x = x;
 	clone.y = y;
+	clone.width = 270;
+	clone.height = 55;
+	clone.image.scale = scale;
 	if (sprite.img) clone.img = sprite.img;
 	if (sprite.color) clone.color = sprite.color;
 	if (sprite.friction) clone.friction = sprite.friction;
-	clone.width = sprite.width;
-	clone.height = sprite.height;
-	createHitbox(clone, x, y, sprite.width, sprite.height);
 	clone.physics = sprite.physics;
 	clone.rotation = sprite.rotation;
+	createHitbox(clone, x, y, clone.width, clone.height);
 	return clone;
 }
 
 function createHitbox(sprite, x, y, width, length){
-	let hitbox = new Sprite()
+	let hitbox = new Sprite();
 	hitbox.color = 'blue';
 	hitbox.x = x;
 	hitbox.y = y;
@@ -55,8 +55,9 @@ function createHitbox(sprite, x, y, width, length){
 	return hitbox;
 }
 
-createPlatform(platform, 400, 0);
-createPlatform(platform, 200, -100);
+createPlatform(platformTemplate, 50, 80, 1);
+createPlatform(platformTemplate, 400, -25, 1);
+createPlatform(platformTemplate, 150, -150, 1);
 
 q5.update = function () {
 	background('skyblue');
