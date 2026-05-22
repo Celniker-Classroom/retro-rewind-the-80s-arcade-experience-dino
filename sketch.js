@@ -2,16 +2,18 @@ await Canvas();
 world.gravity.y = 30;
 
 let dino = new Sprite();
-dino.x = 50;
-dino.y = 200;
+dino.x = -500;
+dino.y = 250;
 dino.friction = 0;
 dino.img = '🦖';
 let hitboxes = [];
 let ground = new Sprite();
-ground.x = 0;
-ground.y = 250;
-ground.width = 1500;
-ground.height = 100;
+ground.img = 'images/Ground1.png';
+ground.image.scale = 4;
+ground.x = -250;
+ground.y = 275;
+ground.width = 600;
+ground.height = 80;
 ground.rotation = 0;
 ground.physics = STATIC;
 createHitbox(ground, 0, 250, 1500, 100);
@@ -26,15 +28,14 @@ const platformTemplate = {
 
 function createPlatform(sprite, x, y, scale){
 	let clone = new Sprite()
-	clone.img = sprite.img;
 	clone.x = x;
 	clone.y = y;
-	clone.width = 270;
-	clone.height = 55;
-	clone.image.scale = scale;
+	clone.width = 270 * scale;
+	clone.height = 55 * scale;
 	if (sprite.img) clone.img = sprite.img;
 	if (sprite.color) clone.color = sprite.color;
 	if (sprite.friction) clone.friction = sprite.friction;
+	clone.image.scale = scale;
 	clone.physics = sprite.physics;
 	clone.rotation = sprite.rotation;
 	createHitbox(clone, x, y, clone.width, clone.height);
@@ -46,7 +47,7 @@ function createHitbox(sprite, x, y, width, length){
 	hitbox.color = 'blue';
 	hitbox.x = x;
 	hitbox.y = y;
-	hitbox.width = width + 10;
+	hitbox.width = width
 	hitbox.height = length + 10;
 	hitbox.physics = STATIC;
 	hitbox.overlaps(allSprites);
@@ -55,12 +56,25 @@ function createHitbox(sprite, x, y, width, length){
 	return hitbox;
 }
 
-createPlatform(platformTemplate, 50, 80, 1);
-createPlatform(platformTemplate, 400, -25, 1);
-createPlatform(platformTemplate, 150, -150, 1);
+function createPrey(sprite, x, y){
+	let clone = new Sprite();
+	clone.x = x;
+	clone.y = y;
+	clone.img = sprite.img;
+	clone.physics = sprite.physics;
+	clone.rotation = sprite.rotation;
+	return clone;
+}
+
+//Level 1 Platforms
+createPlatform(platformTemplate, -200, 80, 0.5);
+createPlatform(platformTemplate, 200, -25, 0.7);
+createPlatform(platformTemplate, 0, -150, 0.3);
+createPlatform(platformTemplate, 400, -150, 0.3);
+createPlatform(platformTemplate, -300, -150, 0.5);
 
 q5.update = function () {
-	background('skyblue');
+	background('black');
 	dino.rotation = 0;
 
 	let isOnSurface = hitboxes.some(hb => dino.overlapping(hb));
@@ -69,10 +83,10 @@ q5.update = function () {
 	}
 
 	if (kb.pressing('a')){
-		dino.vel.x = -10;
+		dino.vel.x = -8;
 	}
 	if (kb.pressing('d')) {
-		dino.vel.x = 10;
+		dino.vel.x = 8;
 	}
 	else if (!kb.pressing('a') && !kb.pressing('d')) {
 		dino.vel.x = 0;
