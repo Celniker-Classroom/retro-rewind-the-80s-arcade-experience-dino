@@ -16,6 +16,7 @@ ground.width = 600;
 ground.height = 80;
 ground.rotation = 0;
 ground.physics = STATIC;
+ground.addCollider(0, -100, 600, 80, 'rectangle');
 createHitbox(ground, 0, 250, 1500, 100);
 
 const platformTemplate = {
@@ -97,8 +98,30 @@ q5.update = function () {
 	}
 	else if (-0.1 < dino.vel.x && dino.vel.x < 0.1) {
 		dino.scale.x = dino.scale.x;
-	} 
+	}
 	else {
 		dino.scale.x = 1;
 	}
 };
+
+// Screen dimensions
+let w = 1360;
+let h = 600;
+let thickness = 10;
+
+
+let topWall = new Sprite(0, -h/2, w, thickness, 'static');
+topWall.color = 'green';
+topWall.strokeWeight = 0;
+
+let bottomWall = new Sprite(0, h/2, w, thickness, 'static');
+bottomWall.color = 'green';
+bottomWall.strokeWeight = 0;
+
+let leftWall = new Sprite(-w/2, 0, thickness, h, 'static');
+leftWall.color = 'green';
+leftWall.strokeWeight = 0;
+
+let rightWall = new Sprite(w/2, 0, thickness, h, 'static');
+rightWall.color = 'green';
+rightWall.strokeWeight = 0;
