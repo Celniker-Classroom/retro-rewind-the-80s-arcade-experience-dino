@@ -26,7 +26,6 @@ function playGameOverSound(){
 	soundPlayed = true;
 	try { gameoversound.play().catch(()=>{}); } catch (e) {}
 	gameoversound.pause();
-	gameoversound.currentTime = 0;
 }
 
 let levelsCleared = 0;
@@ -367,7 +366,6 @@ q5.update = function () {
 		background('black');
 		if(soundPlayed === false){
 			playGameOverSound();
-			soundPlayed = true;
 		}
 		stopMusic();
 		gameOver.visible = true;
