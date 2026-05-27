@@ -10,6 +10,18 @@ await Canvas();
 world.gravity.y = 30;
 
 let score = 0;
+// Background music 
+let bgMusic = new Audio('images/song.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+function startMusic(){
+	try { bgMusic.play().catch(()=>{}); } catch (e) {}
+}
+let gameoversound = new Audio('images/gameoverrr.mp3');
+function playGameOverSound(){
+	try { gameoversound.play().catch(()=>{}); } catch (e) {}
+}
+
 let levelsCleared = 0;
 
 let meat = new Sprite();
@@ -230,6 +242,7 @@ q5.update = function () {
 			dino.x = -300;
 			dino.y = 150;
 			loadNextLevel = true;
+			startMusic();
 		}
 		dino.visible = false;
 		ground.visible = false;
@@ -335,13 +348,16 @@ q5.update = function () {
 		startScreen.visible = true;
 		if (kb.presses('space')) {
 			state = 'level1';
+			startMusic();
 		}
+			
 		dino.visible = false;
 		ground.visible = false;
 	}
 	else if (state === 'gameOver') {
 		resetLevel();
 		background('black');
+		playGameOverSound();
 		gameOver.visible = true;
 		meat.visible = false;
 		ground.visible = false;
@@ -356,6 +372,7 @@ q5.update = function () {
 			dino.y = 150;
 			loadNextLevel = true;
 			gameOver.visible = false;
+			startMusic();
 		}
 	}
 };
