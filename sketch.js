@@ -1,5 +1,24 @@
+//Write up:
+//I created my game by mixing mechanics from two classic 80s games, Donkey Kong and Super Mario Bros.
+//The player controls a dinosaur that must navigate through 4 levels of platforms to reach a carcass at the end of each level. 
+//Just like Super Mario Bros, it is a platforming game with varying difficulties. However, instead of a continuous scroller, it switches and resets at each level like Donkey Kong.
+//I think having the level reset is good for quick, modular level design. 
+//Though 4 levels are included in the base game it is possible to design a level purely through inputting parameters
+//into the createPlatform function, which allows for infinite, quick and easy level design possibilities.
+
 await Canvas();
 world.gravity.y = 30;
+
+let score = 0;
+let levelsCleared = 0;
+
+let meat = new Sprite();
+meat.img = 'images/Meat.png';
+meat.scale = 1;
+meat.physics = STATIC;
+meat.physicsEnabled = true;
+meat.layer = 4;
+meat.visible = false;
 
 let carcass = new Sprite();
 carcass.img = 'images/Carcass.png';
@@ -10,10 +29,18 @@ carcass.visible = false;
 
 let gameOver = new Sprite();
 	gameOver.img = 'images/Game Over.png';
-	gameOver.scale = 8;
+	gameOver.scale = 7;
+	gameOver.y = -35;
 	gameOver.physics = STATIC;
 	gameOver.physicsEnabled = false;
 	gameOver.layer = 5;
+
+let startScreen = new Sprite();
+startScreen.img = 'images/StartGame.png';
+startScreen.scale = 8;
+startScreen.physics = STATIC;
+startScreen.physicsEnabled = false;
+startScreen.layer = 5;
 
 let dino = new Sprite();
 dino.x = -300;
@@ -103,6 +130,7 @@ function createPrey(sprite, x, y){
 
 function resetLevel(){
 	// Remove all platforms
+	meat.physicsEnabled = true;
 	dino.x = -300;
 	dino.y = 150;
 	carcass.visible = false;
@@ -120,27 +148,35 @@ function resetLevel(){
 
 //Level 1 Platforms
 function createLevel1(){
+	score = 0;
 	resetLevel();
 	createPlatform(platformTemplate, -200, 80, 0.5);
 	createPlatform(platformTemplate, 200, -25, 0.7);
 	createPlatform(platformTemplate2, 0, -150, 0.3);
 	createPlatform(platformTemplate, 400, -150, 0.3);
 	createPlatform(platformTemplate2, -300, -150, 0.5);
+	createPlatform(platformTemplate, 550, 100, 0.3);
 	carcass.x = -300;
 	carcass.y = -180;
 	carcass.visible = true;
+	meat.x = 550;
+	meat.y = 80
+	meat.visible = true;
 }
 
 function createLevel2(){
 	resetLevel();
 	createPlatform(platformTemplate, -100, 100, 0.3);
 	createPlatform(platformTemplate2, 100, 50, 0.5);
-	createPlatform(platformTemplate, 300, -50, 0.4);
+	createPlatform(platformTemplate, 300, 0, 0.4);
 	createPlatform(platformTemplate2, -300, -50, 0.4);
 	createPlatform(platformTemplate, 0, -200, 0.6);
 	carcass.x = 0;
 	carcass.y = -230;
 	carcass.visible = true;
+	meat.x = 300;
+	meat.y = -20;
+	meat.visible = true;
 }
 
 function createLevel3(){
@@ -153,6 +189,9 @@ function createLevel3(){
 	carcass.x = 0;
 	carcass.y = -230;
 	carcass.visible = true;
+	meat.x = 200;
+	meat.y = -70;
+	meat.visible = true;
 }
 
 function createLevel4(){
@@ -166,6 +205,9 @@ function createLevel4(){
 	carcass.x = 300;
 	carcass.y = -120;
 	carcass.visible = true;
+	meat.x = 300;
+	meat.y = -120;
+	meat.visible = true;
 }
 
 let state = 'start';
@@ -177,11 +219,12 @@ q5.update = function () {
 	dino.visible = true;
 	ground.visible = true;
 	if (state === 'win') {
+		resetLevel();
 		background('black');
 		textSize(50);
 		fill('white');
 		textAlign(CENTER);
-		text('You Win! Press Space to Restart', 0, 0);
+		text('You Win! Score: ' + score + ' \nPress Space to Restart', 0, 0);
 		if (kb.presses('space')) {
 			state = 'level1';
 			dino.x = -300;
@@ -192,7 +235,13 @@ q5.update = function () {
 		ground.visible = false;
 	}
 	if (state === 'level1' || state === 'level2' || state === 'level3' || state === 'level4') {
-		background('black');
+		if (dino.collides(meat)){
+			meat.visible = false;
+			meat.physicsEnabled = false;
+			score += 50;
+		}
+		startScreen.visible = false;
+		background('skyblue');
 		dino.rotation = 0;
 		//uses the hitboxes to determine if the dinosaur is on a surface, allowing it to jump
 		let isOnSurface = platformHitboxes.some(hb => dino.overlapping(hb)) || dino.overlapping(groundHitbox);
@@ -265,6 +314,8 @@ q5.update = function () {
 		// checks for level finish to reset the level
 		if (dino.collides(carcass)){
 			loadNextLevel = true;
+			levelsCleared += 1;
+			score += 100;
 			if (state === 'level1'){
 				state = 'level2';
 			}
@@ -280,13 +331,10 @@ q5.update = function () {
 		}
 	}
 	else if (state === 'start') {
-		background('black');
-		textSize(50);
-		fill('white');
-		textAlign(CENTER);
-		text('Press Space to Start', 0, 0);
+		background('skyblue');
+		startScreen.visible = true;
 		if (kb.presses('space')) {
-			state = 'level1';
+			state = 'level4';
 		}
 		dino.visible = false;
 		ground.visible = false;
@@ -295,8 +343,13 @@ q5.update = function () {
 		resetLevel();
 		background('black');
 		gameOver.visible = true;
+		meat.visible = false;
 		ground.visible = false;
 		dino.visible = false;
+		textSize(30);
+		fill('white');
+		textAlign(CENTER);
+		text('Score: ' + score, 0, 250);
 		if (kb.presses('space')) {
 			state = 'level1';
 			dino.x = -300;
