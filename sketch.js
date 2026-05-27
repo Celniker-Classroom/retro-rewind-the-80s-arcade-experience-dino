@@ -89,7 +89,7 @@ function createPlatform(sprite, x, y, scale){
 	let clone = new Sprite()
 	clone.x = x;
 	clone.y = y;
-	clone.width = 270 * scale;
+	clone.width = 290 * scale;
 	clone.height = 55 * scale;
 	if (sprite.img) clone.img = sprite.img;
 	if (sprite.color) clone.color = sprite.color;
@@ -107,8 +107,8 @@ function createHitbox(sprite, isGround = false){
 	hitbox.color = 'blue';
 	hitbox.x = sprite.x;
 	hitbox.y = sprite.y;
-	hitbox.width = sprite.width;
-	hitbox.height = sprite.height + 10;
+	hitbox.width = sprite.width + 10;
+	hitbox.height = sprite.height + 20;
 	hitbox.physics = STATIC;
 	hitbox.overlaps(allSprites);
 	if (!isGround) {
@@ -152,9 +152,9 @@ function createLevel1(){
 	resetLevel();
 	createPlatform(platformTemplate, -200, 80, 0.5);
 	createPlatform(platformTemplate, 200, -25, 0.7);
-	createPlatform(platformTemplate2, 0, -150, 0.3);
+	createPlatform(platformTemplate, 0, -150, 0.3);
 	createPlatform(platformTemplate, 400, -150, 0.3);
-	createPlatform(platformTemplate2, -300, -150, 0.5);
+	createPlatform(platformTemplate, -300, -150, 0.5);
 	createPlatform(platformTemplate, 550, 100, 0.3);
 	carcass.x = -300;
 	carcass.y = -180;
@@ -167,9 +167,9 @@ function createLevel1(){
 function createLevel2(){
 	resetLevel();
 	createPlatform(platformTemplate, -100, 100, 0.3);
-	createPlatform(platformTemplate2, 100, 50, 0.5);
+	createPlatform(platformTemplate, 100, 50, 0.5);
 	createPlatform(platformTemplate, 300, 0, 0.4);
-	createPlatform(platformTemplate2, -300, -50, 0.4);
+	createPlatform(platformTemplate, -300, -50, 0.4);
 	createPlatform(platformTemplate, 0, -200, 0.6);
 	carcass.x = 0;
 	carcass.y = -230;
@@ -182,9 +182,9 @@ function createLevel2(){
 function createLevel3(){
 	resetLevel();
 	createPlatform(platformTemplate, -400, 100, 0.3);
-	createPlatform(platformTemplate2, -100, 50, 0.2);
+	createPlatform(platformTemplate, -100, 50, 0.2);
 	createPlatform(platformTemplate, 200, -50, 0.1);
-	createPlatform(platformTemplate2, -200, -50, 0.2);
+	createPlatform(platformTemplate, -200, -50, 0.2);
 	createPlatform(platformTemplate, 0, -200, 0.1);
 	carcass.x = 0;
 	carcass.y = -230;
@@ -197,16 +197,16 @@ function createLevel3(){
 function createLevel4(){
 	resetLevel();
 	createPlatform(platformTemplate, -400, 100, 0.2);
-	createPlatform(platformTemplate2, -100, 50, 0.1);
+	createPlatform(platformTemplate, -100, 50, 0.1);
 	createPlatform(platformTemplate, 200, -50, 0.2);
-	createPlatform(platformTemplate2, -200, -50, 0.3);
+	createPlatform(platformTemplate, -200, -50, 0.3);
 	createPlatform(platformTemplate, 0, -200, 0.4);
 	createPlatform(platformTemplate, 300, -100, 0.2);
 	carcass.x = 300;
 	carcass.y = -120;
 	carcass.visible = true;
-	meat.x = 300;
-	meat.y = -120;
+	meat.x = 40;
+	meat.y = 20;
 	meat.visible = true;
 }
 
@@ -334,7 +334,7 @@ q5.update = function () {
 		background('skyblue');
 		startScreen.visible = true;
 		if (kb.presses('space')) {
-			state = 'level4';
+			state = 'level1';
 		}
 		dino.visible = false;
 		ground.visible = false;
