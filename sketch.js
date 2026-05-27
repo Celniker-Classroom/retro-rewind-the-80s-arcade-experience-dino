@@ -1,26 +1,57 @@
 await Canvas();
 world.gravity.y = 30;
 
+let carcass = new Sprite();
+carcass.img = 'images/Carcass.png';
+carcass.scale = 1;
+carcass.physics = STATIC;
+carcass.layer = 4;
+carcass.visible = false;
+
+let gameOver = new Sprite();
+	gameOver.img = 'images/Game Over.png';
+	gameOver.scale = 8;
+	gameOver.physics = STATIC;
+	gameOver.physicsEnabled = false;
+	gameOver.layer = 5;
+
 let dino = new Sprite();
-dino.x = -500;
-dino.y = 250;
+dino.x = -300;
+dino.y = 150;
+dino.width = 40;
+dino.height = 40;
 dino.friction = 0;
-dino.img = '🦖';
-let hitboxes = [];
+dino.physics = DYNAMIC;
+dino.addAnis('images/Spritesheet.png', '128x128', {
+	idle: { frames: [0] },
+	run: { frames: [0, 1], frameDelay: 8 }
+});
+dino.changeAni('idle');
+let platforms = [];
+let platformHitboxes = [];
+let groundHitbox;
 let ground = new Sprite();
 ground.img = 'images/Ground1.png';
 ground.image.scale = 4;
-ground.x = -250;
-ground.y = 275;
-ground.width = 600;
+ground.x = -350;
+ground.y = 250;
+ground.width = 650;
 ground.height = 80;
 ground.rotation = 0;
 ground.physics = STATIC;
-ground.addCollider(0, -100, 600, 80, 'rectangle');
-createHitbox(ground, 0, 250, 1500, 100);
+ground.image.offset.x = 90;
+groundHitbox = createHitbox(ground, true);
 
 const platformTemplate = {
   img: 'images/Platform.png',
+  width: 548,
+  height: 119,
+  physics: STATIC,
+  rotation: 0
+};
+
+const platformTemplate2 = {
+  img: 'images/Platform2.png',
   width: 548,
   height: 119,
   physics: STATIC,
@@ -39,20 +70,23 @@ function createPlatform(sprite, x, y, scale){
 	clone.image.scale = scale;
 	clone.physics = sprite.physics;
 	clone.rotation = sprite.rotation;
-	createHitbox(clone, x, y, clone.width, clone.height);
+	createHitbox(clone);
+	platforms.push(clone);
 	return clone;
 }
 
-function createHitbox(sprite, x, y, width, length){
+function createHitbox(sprite, isGround = false){
 	let hitbox = new Sprite();
 	hitbox.color = 'blue';
-	hitbox.x = x;
-	hitbox.y = y;
-	hitbox.width = width
-	hitbox.height = length + 10;
+	hitbox.x = sprite.x;
+	hitbox.y = sprite.y;
+	hitbox.width = sprite.width;
+	hitbox.height = sprite.height + 10;
 	hitbox.physics = STATIC;
 	hitbox.overlaps(allSprites);
-	hitboxes.push(hitbox);
+	if (!isGround) {
+		platformHitboxes.push(hitbox);
+	}
 	hitbox.visible = false;
 	return hitbox;
 }
@@ -67,44 +101,213 @@ function createPrey(sprite, x, y){
 	return clone;
 }
 
+function resetLevel(){
+	// Remove all platforms
+	dino.x = -300;
+	dino.y = 150;
+	carcass.visible = false;
+	for (let platform of platforms){
+		platform.delete();
+	}
+	platforms = [];
+	
+	// Remove all platform hitboxes
+	for (let hitbox of platformHitboxes){
+		hitbox.delete();
+	}
+	platformHitboxes = [];
+}
+
 //Level 1 Platforms
-createPlatform(platformTemplate, -200, 80, 0.5);
-createPlatform(platformTemplate, 200, -25, 0.7);
-createPlatform(platformTemplate, 0, -150, 0.3);
-createPlatform(platformTemplate, 400, -150, 0.3);
-createPlatform(platformTemplate, -300, -150, 0.5);
+function createLevel1(){
+	resetLevel();
+	createPlatform(platformTemplate, -200, 80, 0.5);
+	createPlatform(platformTemplate, 200, -25, 0.7);
+	createPlatform(platformTemplate2, 0, -150, 0.3);
+	createPlatform(platformTemplate, 400, -150, 0.3);
+	createPlatform(platformTemplate2, -300, -150, 0.5);
+	carcass.x = -300;
+	carcass.y = -180;
+	carcass.visible = true;
+}
+
+function createLevel2(){
+	resetLevel();
+	createPlatform(platformTemplate, -100, 100, 0.3);
+	createPlatform(platformTemplate2, 100, 50, 0.5);
+	createPlatform(platformTemplate, 300, -50, 0.4);
+	createPlatform(platformTemplate2, -300, -50, 0.4);
+	createPlatform(platformTemplate, 0, -200, 0.6);
+	carcass.x = 0;
+	carcass.y = -230;
+	carcass.visible = true;
+}
+
+function createLevel3(){
+	resetLevel();
+	createPlatform(platformTemplate, -400, 100, 0.3);
+	createPlatform(platformTemplate2, -100, 50, 0.2);
+	createPlatform(platformTemplate, 200, -50, 0.1);
+	createPlatform(platformTemplate2, -200, -50, 0.2);
+	createPlatform(platformTemplate, 0, -200, 0.1);
+	carcass.x = 0;
+	carcass.y = -230;
+	carcass.visible = true;
+}
+
+function createLevel4(){
+	resetLevel();
+	createPlatform(platformTemplate, -400, 100, 0.2);
+	createPlatform(platformTemplate2, -100, 50, 0.1);
+	createPlatform(platformTemplate, 200, -50, 0.2);
+	createPlatform(platformTemplate2, -200, -50, 0.3);
+	createPlatform(platformTemplate, 0, -200, 0.4);
+	createPlatform(platformTemplate, 300, -100, 0.2);
+	carcass.x = 300;
+	carcass.y = -120;
+	carcass.visible = true;
+}
+
+let state = 'start';
+let loadNextLevel = true;
+gameOver.visible = false;
 
 q5.update = function () {
-	background('black');
-	dino.rotation = 0;
+	// Game logic for gameplay
+	dino.visible = true;
+	ground.visible = true;
+	if (state === 'win') {
+		background('black');
+		textSize(50);
+		fill('white');
+		textAlign(CENTER);
+		text('You Win! Press Space to Restart', 0, 0);
+		if (kb.presses('space')) {
+			state = 'level1';
+			dino.x = -300;
+			dino.y = 150;
+			loadNextLevel = true;
+		}
+		dino.visible = false;
+		ground.visible = false;
+	}
+	if (state === 'level1' || state === 'level2' || state === 'level3' || state === 'level4') {
+		background('black');
+		dino.rotation = 0;
+		//uses the hitboxes to determine if the dinosaur is on a surface, allowing it to jump
+		let isOnSurface = platformHitboxes.some(hb => dino.overlapping(hb)) || dino.overlapping(groundHitbox);
+		//directionals
+		if (kb.presses('w') && isOnSurface) {
+			dino.vel.y = -12;
+		}
 
-	let isOnSurface = hitboxes.some(hb => dino.overlapping(hb));
-	if (kb.presses('w') && isOnSurface) {
-		dino.vel.y = -12;
-	}
+		if (kb.pressing('a')){
+			dino.vel.x = -7;
+		}
+		if (kb.pressing('d')) {
+			dino.vel.x = 7;
+		}
+		else if (!kb.pressing('a') && !kb.pressing('d')) {
+			dino.vel.x = 0;
+		}
+		//set the direction the dinosaur is facing
+		if (dino.vel.x > 0.1) {
+			dino.scale.x = 1;
+		}
+		else if (-0.1 < dino.vel.x && dino.vel.x < 0.1) {
+			dino.scale.x = dino.scale.x;
+		}
+		else {
+			dino.scale.x = -1;
+		}
 
-	if (kb.pressing('a')){
-		dino.vel.x = -8;
+		//control animation based on movement
+		if (Math.abs(dino.vel.x) > 0.1) {
+			// Play run animation when moving
+			if (dino.ani.name !== 'run') {
+				dino.changeAni('run');
+			}
+		} else {
+			// Show idle frame when not moving
+			if (dino.ani.name !== 'idle') {
+				dino.changeAni('idle');
+			}
+		}
+
+		if (dino.y > 260){
+			state = 'gameOver';
+		}
+		// checks if the next level should be generated
+		if (state === 'level1'){
+			if (loadNextLevel){
+				createLevel1();
+				loadNextLevel = false;
+			}
+		}
+		else if (state === 'level2'){
+			if (loadNextLevel){
+				createLevel2();
+				loadNextLevel = false;
+			}
+		}
+		else if (state === 'level3'){
+			if (loadNextLevel){
+				createLevel3();
+				loadNextLevel = false;
+			}
+		}
+		else if (state === 'level4'){
+			if (loadNextLevel){
+				createLevel4();
+				loadNextLevel = false;
+			}
+		}
+		// checks for level finish to reset the level
+		if (dino.collides(carcass)){
+			loadNextLevel = true;
+			if (state === 'level1'){
+				state = 'level2';
+			}
+			else if (state === 'level2'){
+				state = 'level3';
+			}
+			else if (state === 'level3'){
+				state = 'level4';
+			}
+			else if (state === 'level4'){
+				state = 'win';
+			}
+		}
 	}
-	if (kb.pressing('d')) {
-		dino.vel.x = 8;
+	else if (state === 'start') {
+		background('black');
+		textSize(50);
+		fill('white');
+		textAlign(CENTER);
+		text('Press Space to Start', 0, 0);
+		if (kb.presses('space')) {
+			state = 'level1';
+		}
+		dino.visible = false;
+		ground.visible = false;
 	}
-	else if (!kb.pressing('a') && !kb.pressing('d')) {
-		dino.vel.x = 0;
-	}
-	//set the direction the dinosaur is facing
-	if (dino.vel.x > 0.1) {
-		dino.scale.x = -1;
-	}
-	else if (-0.1 < dino.vel.x && dino.vel.x < 0.1) {
-		dino.scale.x = dino.scale.x;
-	}
-	else {
-		dino.scale.x = 1;
+	else if (state === 'gameOver') {
+		resetLevel();
+		background('black');
+		gameOver.visible = true;
+		ground.visible = false;
+		dino.visible = false;
+		if (kb.presses('space')) {
+			state = 'level1';
+			dino.x = -300;
+			dino.y = 150;
+			loadNextLevel = true;
+			gameOver.visible = false;
+		}
 	}
 };
 
-// Screen dimensions
+// Borders of the game
 let w = 1360;
 let h = 600;
 let thickness = 10;
