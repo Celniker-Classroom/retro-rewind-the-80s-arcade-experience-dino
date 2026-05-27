@@ -23,6 +23,7 @@ function stopMusic(){
 }
 let gameoversound = new Audio('images/gameoverrr.mp3');
 function playGameOverSound(){
+	gameoversound.pause();
 	gameoversound.currentTime = 0;
 	try { gameoversound.play().catch(()=>{}); } catch (e) {}
 }
