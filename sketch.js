@@ -24,6 +24,8 @@ function stopMusic(){
 let gameoversound = new Audio('images/gameoverrr.mp3');
 function playGameOverSound(){
 	try { gameoversound.play().catch(()=>{}); } catch (e) {}
+	gameoversound.pause();
+	gameoversound.currentTime = 0;
 }
 
 let levelsCleared = 0;
@@ -348,6 +350,7 @@ q5.update = function () {
 		}
 	}
 	else if (state === 'start') {
+		soundPlayed = false;
 		background('skyblue');
 		startScreen.visible = true;
 		if (kb.presses('space')) {
@@ -361,7 +364,10 @@ q5.update = function () {
 	else if (state === 'gameOver') {
 		resetLevel();
 		background('black');
-		playGameOverSound();
+		if(!soundPlayed){
+			playGameOverSound();
+			soundPlayed = true;
+		}
 		stopMusic();
 		gameOver.visible = true;
 		meat.visible = false;
