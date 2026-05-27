@@ -365,7 +365,7 @@ q5.update = function () {
 	else if (state === 'gameOver') {
 		resetLevel();
 		background('black');
-		if(!soundPlayed){
+		if(soundPlayed === false){
 			playGameOverSound();
 			soundPlayed = true;
 		}
