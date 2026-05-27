@@ -348,8 +348,6 @@ q5.update = function () {
 		}
 	}
 	else if (state === 'start') {
-		gameoversound.pause();
-		gameoversound.currentTime = 0;
 		background('skyblue');
 		startScreen.visible = true;
 		if (kb.presses('space')) {
