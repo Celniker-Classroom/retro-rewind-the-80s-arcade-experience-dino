@@ -166,6 +166,7 @@ function resetLevel(){
 
 //Level 1 Platforms
 function createLevel1(){
+	soundPlayed = false;
 	score = 0;
 	resetLevel();
 	createPlatform(platformTemplate, -200, 80, 0.5);
@@ -350,7 +351,6 @@ q5.update = function () {
 		}
 	}
 	else if (state === 'start') {
-		soundPlayed = false;
 		background('skyblue');
 		startScreen.visible = true;
 		if (kb.presses('space')) {
