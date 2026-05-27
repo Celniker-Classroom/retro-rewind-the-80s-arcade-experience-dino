@@ -21,11 +21,10 @@ function stopMusic(){
 	bgMusic.pause();
 	bgMusic.currentTime = 0;
 }
+let soundPlayed = false;
 let gameoversound = new Audio('images/gameoverrr.mp3');
 function playGameOverSound(){
-	soundPlayed = true;
 	try { gameoversound.play().catch(()=>{}); } catch (e) {}
-	gameoversound.pause();
 }
 
 let levelsCleared = 0;
@@ -366,6 +365,7 @@ q5.update = function () {
 		background('black');
 		if(soundPlayed === false){
 			playGameOverSound();
+			soundPlayed = true;
 		}
 		stopMusic();
 		gameOver.visible = true;
