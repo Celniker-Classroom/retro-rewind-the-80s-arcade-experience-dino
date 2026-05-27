@@ -17,6 +17,10 @@ bgMusic.volume = 0.5;
 function startMusic(){
 	try { bgMusic.play().catch(()=>{}); } catch (e) {}
 }
+function stopMusic(){
+	bgMusic.pause();
+	bgMusic.currentTime = 0;
+}
 let gameoversound = new Audio('images/gameoverrr.mp3');
 function playGameOverSound(){
 	try { gameoversound.play().catch(()=>{}); } catch (e) {}
@@ -358,6 +362,7 @@ q5.update = function () {
 		resetLevel();
 		background('black');
 		playGameOverSound();
+		stopMusic();
 		gameOver.visible = true;
 		meat.visible = false;
 		ground.visible = false;
