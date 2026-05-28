@@ -9,6 +9,22 @@
 await Canvas();
 world.gravity.y = 30;
 
+let instructions = new Sprite();
+instructions.width = 300;
+instructions.height = 500;
+instructions.x = -450;
+instructions.y = 0;
+instructions.physics = STATIC;
+instructions.physicsEnabled = true;
+instructions.color = 'skyblue';
+instructions.stroke = 'skyblue';
+instructions.text = 'Instructions:\nUse the arrow keys to move and jump.\nCollect the meat to increase your score.\nReach the carcass to advance to \nthe next level.\nAvoid falling off the platforms!\nJump while touching the side of a \nplatform to double-jump!';
+instructions.textSize = 15;
+instructions.textFill = 'black';
+instructions.textAlign = LEFT;
+instructions.layer = 5;
+instructions.visible = true;
+
 let score = 0;
 // Background music 
 let bgMusic = new Audio('images/song.mp3');
@@ -165,6 +181,8 @@ function resetLevel(){
 
 //Level 1 Platforms
 function createLevel1(){
+	instructions.visible = false;
+	instructions.physicsEnabled = false;
 	soundPlayed = false;
 	score = 0;
 	resetLevel();
@@ -265,17 +283,17 @@ q5.update = function () {
 		//uses the hitboxes to determine if the dinosaur is on a surface, allowing it to jump
 		let isOnSurface = platformHitboxes.some(hb => dino.overlapping(hb)) || dino.overlapping(groundHitbox);
 		//directionals
-		if (kb.presses('w') && isOnSurface) {
+		if (kb.presses('up') && isOnSurface) {
 			dino.vel.y = -12;
 		}
 
-		if (kb.pressing('a')){
+		if (kb.pressing('left')){
 			dino.vel.x = -7;
 		}
-		if (kb.pressing('d')) {
+		if (kb.pressing('right')) {
 			dino.vel.x = 7;
 		}
-		else if (!kb.pressing('a') && !kb.pressing('d')) {
+		else if (!kb.pressing('left') && !kb.pressing('right')) {
 			dino.vel.x = 0;
 		}
 		//set the direction the dinosaur is facing
